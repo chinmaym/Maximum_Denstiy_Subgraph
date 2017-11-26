@@ -21,7 +21,7 @@ class Graph():
                     parent[ind] = u
         return True if visited[t] else False
     
-    def minCut(self,source,sink):
+    def findMinCut(self,source,sink):
         parent = [-1] * self.row
         max_flow = 0
         while self.checkPath(source, sink, parent):
@@ -34,12 +34,12 @@ class Graph():
             v = sink
             while v!=source:
                 u = parent[v]
-                self.graph[v][u] -= path_flow
-                self.graph[u][v] += path_flow
+                self.graph[u][v] -= path_flow
+                self.graph[v][u] += path_flow
                 v = parent[v]
-
-        for i in range(self.ROW):
-            for j in range(self.COL):
+                
+        for i in range(self.row):
+            for j in range(self.col):
                 if self.graph[i][j] == 0 and self.orginal_graph[i][j] > 0:
                     self.minCut.append((i,j))
         
