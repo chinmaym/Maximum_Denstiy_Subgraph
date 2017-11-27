@@ -4,6 +4,7 @@ Created on Nov 24, 2017
 @author: Chinmay Mishra
 '''
 from Core.Graph import Graph
+from platform import node
 def calculateDegree(i,graph):
     deg = sum(graph[i])
     for ind,j in enumerate(graph):
@@ -19,24 +20,33 @@ def copyGraph(graph):
     return newGraph
 
 def findSets(graph,source = 0):
+    print graph
     q = list()
     q.append(source)
     visited = list()
-    newGraph = list()
+    visited.append(source)
     while len(q)!=0:
-        print q
         nodeList = []
-        node = q.pop()
-        visited.append(node)
-        if node != source:
-            nodeList = [0]*len(graph[node])
+        node = q[0]
+        q.remove(node)
+        nodeList = list()
+#         print node
+#         print "node", node
+#         print "source", source
         for ind,u in enumerate(graph[node]):
-            if u == 1 and ind not in visited:
-                q.append(ind)
-                if node != source:
-                    nodeList[u] = 1
-        if len(nodeList) > 0:
-            newGraph.append(nodeList)
+            if u > 0:
+                if ind not in visited:
+                    q.append(ind)
+                    if ind not in q:
+                        nodeList.append(ind)
+                visited.append(ind)
+    return nodeList
+
+def createNewGraph(nodeList,graph):
+    newGraph = []
+    for i in graph:
+        newGraph.append([x for ind,x in enumerate(i) if ind+1 in nodeList])
+    print newGraph
     return newGraph
 
 def densestSubgraph(graph,v,e):
@@ -44,26 +54,30 @@ def densestSubgraph(graph,v,e):
     n=5; m=6
     l=0;u=m;
     while u-l>=1/(v*(v-1)):
+        print "l",l
+        print "u",u
         g = (float(u)+l)/2;
-        print g
-        deg = [calculateDegree(i, graph) for i,j in enumerate(graph)]
+        print "g",g
+        print "graph ", graph
+        deg = [calculateDegree(i, graph) for i,_ in enumerate(graph)]
         graph1 = convert2network(graph, deg, n, m,g)
-        print graph1
+        modifiedGraph = copyGraph(graph1)
+        print "converted graph to network  ",graph1
         graph2 = Graph(graph1)
         graph2.findMinCut(0, len(graph1)-1)
-        print graph2.minCut
-        modifiedGraph = copyGraph(graph2.graph)
-        print modifiedGraph
+        print "mincut  ", graph2.minCut
+        print "modified graph  ", modifiedGraph
         removeEdges(modifiedGraph, graph2.minCut)
-        print modifiedGraph
+        print "after removing edges ", modifiedGraph
         s = findSets(modifiedGraph)
-        print s
+        print "nodes in set s ", s
+        newGraph = createNewGraph(s,graph)
         if len(s) == 0:
             u = g
         else:
             l = g       
-            graph = s
-        input()
+            graph = newGraph
+        raw_input()
         
 def removeEdges(graph,minCut):
     for i,j in minCut:
