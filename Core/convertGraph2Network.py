@@ -43,9 +43,13 @@ def findSets(graph,source = 0):
     return nodeList
 
 def createNewGraph(nodeList,graph):
+    print nodeList
     newGraph = []
     for i in graph:
-        newGraph.append([x for ind,x in enumerate(i) if ind+1 in nodeList])
+        print i
+        currentNodeList = [x for ind,x in enumerate(i) if ind+1 in nodeList]
+        print currentNodeList
+        newGraph.append(currentNodeList)
     print newGraph
     return newGraph
 
