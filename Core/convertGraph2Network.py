@@ -25,43 +25,56 @@ def findSets(graph,source = 0):
     q.append(source)
     visited = list()
     visited.append(source)
+    nodeList = []
     while len(q)!=0:
-        nodeList = []
         node = q[0]
         q.remove(node)
-        nodeList = list()
-#         print node
-#         print "node", node
-#         print "source", source
+        print node
+        print "node", node
+        print "source", source
         for ind,u in enumerate(graph[node]):
             if u > 0:
                 if ind not in visited:
                     q.append(ind)
-                    if ind not in q:
-                        nodeList.append(ind)
+                if ind not in nodeList:
+                    nodeList.append(ind)
                 visited.append(ind)
     return nodeList
 
 def createNewGraph(nodeList,graph):
     print nodeList
+    n=0;m=0
     newGraph = []
-    for i in graph:
-        print i
-        currentNodeList = [x for ind,x in enumerate(i) if ind+1 in nodeList]
-        print currentNodeList
-        newGraph.append(currentNodeList)
-    print newGraph
-    return newGraph
+    for index,i in enumerate(graph):
+#         print i
+        if (index+1) in nodeList:
+            n+=1
+            if nodeList:
+                currentNodeList = [x for ind,x in enumerate(i) if ind+1 in nodeList]
+            else:
+                currentNodeList = i
+            m += sum(currentNodeList)
+    #         print currentNodeList
+            newGraph.append(currentNodeList)
+    print n,m/2,newGraph
+    return n,m/2,newGraph
 
 def densestSubgraph(graph,v,e):
     origGraph = copyGraph(graph)
+    checkValue = float(1)/(v*(v-1))
+    nodeSet = [x for x in range(1,v+1)]
+    removedNodes = []
+    removedNodesCount = 1
+    print "checkValue", checkValue
     n=5; m=6
     l=0;u=m;
-    while u-l>=1/(v*(v-1)):
+    while u-l>=checkValue:
         print "l",l
         print "u",u
         g = (float(u)+l)/2;
         print "g",g
+        print "u-l", u-l
+        print "checkValue",checkValue
         print "graph ", graph
         deg = [calculateDegree(i, graph) for i,_ in enumerate(graph)]
         graph1 = convert2network(graph, deg, n, m,g)
@@ -75,13 +88,17 @@ def densestSubgraph(graph,v,e):
         print "after removing edges ", modifiedGraph
         s = findSets(modifiedGraph)
         print "nodes in set s ", s
-        newGraph = createNewGraph(s,graph)
+        n1,m1,newGraph = createNewGraph(s,graph)
         if len(s) == 0:
             u = g
         else:
             l = g       
             graph = newGraph
+            removedNodes.append(([x for x in range(1,len(modifiedGraph)-1) if x not in s ],removedNodesCount))
+            removedNodesCount+=1
+            n=n1;m=m1
         raw_input()
+    return graph,removedNodes
         
 def removeEdges(graph,minCut):
     for i,j in minCut:
@@ -112,9 +129,19 @@ if __name__=="__main__":
          [0,0,0,0,1],
          [1,1,1,1,0]
         ]
-    print graph
+    vertices = input("Enter the number of vertices :")
+    print "Enter the adjacency matrix \n"
+    mat = []
+    edges = 0
+    for _ in range(vertices):
+        row = map(int,raw_input().split(' '))
+        edges = sum(row)
+        mat.append(row)
+    edges = edges/2
+    print mat
     deg = []
     for i in range(v):
-        deg.append(calculateDegree(i,graph))
-    densestSubgraph(graph,v,e)
-    print graph
+        deg.append(calculateDegree(i,mat))
+    densestSubGraphNetwork,removedNodes = densestSubgraph(mat,vertices,edges)
+    print densestSubGraphNetwork
+    print removedNodes
