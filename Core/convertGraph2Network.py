@@ -65,9 +65,11 @@ def densestSubgraph(graph,v,e):
     nodeSet = [x for x in range(1,v+1)]
     removedNodes = []
     removedNodesCount = 1
-    print "checkValue", checkValue
-    n=5; m=6
+    
+    n=v; m=e
     l=0;u=m;
+    print "u-l", u-l
+    print "checkValue", checkValue
     while u-l>=checkValue:
         print "l",l
         print "u",u
@@ -97,7 +99,7 @@ def densestSubgraph(graph,v,e):
             removedNodes.append(([x for x in range(1,len(modifiedGraph)-1) if x not in s ],removedNodesCount))
             removedNodesCount+=1
             n=n1;m=m1
-        raw_input()
+#         raw_input()
     return graph,removedNodes
         
 def removeEdges(graph,minCut):
@@ -135,10 +137,10 @@ if __name__=="__main__":
     edges = 0
     for _ in range(vertices):
         row = map(int,raw_input().split(' '))
-        edges = sum(row)
+        edges += sum(row)
         mat.append(row)
     edges = edges/2
-    print mat
+    print edges,mat
     deg = []
     for i in range(v):
         deg.append(calculateDegree(i,mat))
